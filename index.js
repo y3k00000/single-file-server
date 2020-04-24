@@ -7,7 +7,7 @@ const uuidv1 = require("uuid").v1;
 const rimraf = promisify(require("rimraf"));
 
 const PORT = 80;
-const SINGLEFILE = "./single-file";
+const SINGLEFILE = "/SingleFile/cli/single-file";
 const CHROME = "/usr/bin/google-chrome-stable";
 const DOWNLOADS_DIR = `${__dirname}/downloads/`;
 
@@ -42,13 +42,13 @@ app.get("/download",async (req,res)=>{
     } else{
         try{
             let { url } = req.query;
-            let downloadCmd = `${SINGLEFILE} --browser-executable-path ${CHROME} --browser-args [\"--no-sandbox\"] ${url}`;
+            let downloadCmd = `${SINGLEFILE} --browser-executable-path ${CHROME} --browser-args [\\\"--no-sandbox\\\"] ${url}`;
             // let downloadCmd = `echo ${url} >> 12333`;
             let downloadId = uuidv1();
             let pwd = `${DOWNLOADS_DIR}${downloadId}/`;
             let tempFile = `${DOWNLOADS_DIR}${downloadId}.zip`;
             fs.mkdirSync(pwd);
-            await new Promise((res, rej) => {
+            let result = await new Promise((res, rej) => {
                 process.exec(downloadCmd, {
                     cwd: pwd,
                 }, (err, stdout, stderr) => {
@@ -58,7 +58,7 @@ app.get("/download",async (req,res)=>{
                         res({ stdout, stderr });
                     }
                 })
-            });
+            }); console.log(result);
             await zipDirectory(pwd, tempFile);
             await rimraf(pwd);
             res.download(tempFile, err => {
