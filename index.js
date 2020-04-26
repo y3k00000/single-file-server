@@ -48,17 +48,8 @@ app.get("/download",async (req,res)=>{
             let pwd = `${DOWNLOADS_DIR}${downloadId}/`;
             let tempFile = `${DOWNLOADS_DIR}${downloadId}.zip`;
             fs.mkdirSync(pwd);
-            let result = await new Promise((res, rej) => {
-                process.exec(downloadCmd, {
-                    cwd: pwd,
-                }, (err, stdout, stderr) => {
-                    if (err) {
-                        rej(err);
-                    } else {
-                        res({ stdout, stderr });
-                    }
-                })
-            }); console.log(result);
+            let result = await promisify(process.exec)(downloadCmd,{cwd:pwd});
+            console.log(result);
             await zipDirectory(pwd, tempFile);
             await rimraf(pwd);
             res.download(tempFile, err => {
