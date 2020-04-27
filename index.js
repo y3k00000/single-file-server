@@ -41,8 +41,9 @@ app.get("/download",async (req,res)=>{
         res.status(400).send("");
     } else{
         try{
-            let { url } = req.query;
-            let downloadCmd = `${SINGLEFILE} --browser-executable-path ${CHROME} --browser-args [\\\"--no-sandbox\\\"] ${url}`;
+            let { url,crawl } = req.query;
+            let crawlOptions = crawl&&`--crawl-links true --crawl-max-depth ${crawl}`
+            let downloadCmd = `${SINGLEFILE} --browser-executable-path ${CHROME} ${crawlOptions||""} --browser-args [\\\"--no-sandbox\\\"] ${url}`;
             // let downloadCmd = `echo ${url} >> 12333`;
             let downloadId = uuidv1();
             let pwd = `${DOWNLOADS_DIR}${downloadId}/`;
