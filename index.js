@@ -42,6 +42,7 @@ app.get("/download",async (req,res)=>{
     } else{
         try{
             let { url,crawl } = req.query;
+            console.log(`downloading ${url}`);
             let crawlOptions = crawl&&`--crawl-links true --crawl-max-depth ${crawl}`
             let downloadCmd = `${SINGLEFILE} --browser-executable-path ${CHROME} ${crawlOptions||""} --browser-args [\\\"--no-sandbox\\\"] ${url}`;
             // let downloadCmd = `echo ${url} >> 12333`;
