@@ -1,7 +1,7 @@
 const express = require("express");
 const process = require("child_process");
 const fs = require("fs");
-const {promisify} = require("util");
+const { promisify } = require("util");
 const archiver = require('archiver');
 const uuidv1 = require("uuid").v1;
 const rimraf = promisify(require("rimraf"));
@@ -32,36 +32,34 @@ function zipDirectory(source, out) {
 
 let app = express();
 
-if(!fs.existsSync(DOWNLOADS_DIR)){
+if (!fs.existsSync(DOWNLOADS_DIR)) {
     fs.mkdirSync(DOWNLOADS_DIR);
 };
 
-app.get("/download",async (req,res)=>{
-    if(!req.query.url){
-        res.status(400).send("");
-    } else{
-        try{
-            let { url } = req.query;
-            let downloadCmd = `${SINGLEFILE} --browser-executable-path ${CHROME} --browser-args [\\\"--no-sandbox\\\"] ${url}`;
-            // let downloadCmd = `echo ${url} >> 12333`;
-            let downloadId = uuidv1();
-            let pwd = `${DOWNLOADS_DIR}${downloadId}/`;
-            let tempFile = `${DOWNLOADS_DIR}${downloadId}.zip`;
-            fs.mkdirSync(pwd);
-            let result = await promisify(process.exec)(downloadCmd,{cwd:pwd});
-            console.log(result);
-            await zipDirectory(pwd, tempFile);
-            await rimraf(pwd);
-            res.download(tempFile, err => {
-                if (err) console.error(err);
-                fs.unlinkSync(tempFile);
-            });
-        } catch(e){
-            res.status(500).send(e+"");
-        }
+throwIfNoParam = (paramName) => { throw `${paramName} required!!` };
+
+app.get("/download", async (req, res) => {
+    try {
+        let { url = throwIfNoParam("URL")() } = req.query;
+        let downloadCmd = `${SINGLEFILE} --browser-executable-path ${CHROME} --browser-args [\\\"--no-sandbox\\\"] ${url}`;
+        // let downloadCmd = `echo ${url} >> 12333`;
+        let downloadId = uuidv1();
+        let pwd = `${DOWNLOADS_DIR}${downloadId}/`;
+        let tempFile = `${DOWNLOADS_DIR}${downloadId}.zip`;
+        fs.mkdirSync(pwd);
+        let result = await promisify(process.exec)(downloadCmd, { cwd: pwd });
+        console.log(result);
+        await zipDirectory(pwd, tempFile);
+        await rimraf(pwd);
+        res.download(tempFile, err => {
+            if (err) console.error(err);
+            fs.unlinkSync(tempFile);
+        });
+    } catch (e) {
+        res.status(400).send(e + "");
     }
 });
 
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
     console.log(`Listen on ${PORT}!!`);
 });
