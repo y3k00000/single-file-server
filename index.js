@@ -37,11 +37,12 @@ if (!fs.existsSync(DOWNLOADS_DIR)) {
 };
 
 throwIfNoParam = (paramName) => { throw `${paramName} required!!` };
-
 app.get("/download", async (req, res) => {
     try {
-        let { url = throwIfNoParam("URL")() } = req.query;
-        let downloadCmd = `${SINGLEFILE} --browser-executable-path ${CHROME} --browser-args [\\\"--no-sandbox\\\"] ${url}`;
+        let { url = throwIfNoParam("URL")(), crawl } = req.query;
+        console.log(`downloading ${url}`);
+        let crawlOptions = crawl && `--crawl-links true --crawl-max-depth ${crawl}`
+        let downloadCmd = `${SINGLEFILE} --browser-executable-path ${CHROME} ${crawlOptions || ""} --browser-args [\\\"--no-sandbox\\\"] ${url}`;
         // let downloadCmd = `echo ${url} >> 12333`;
         let downloadId = uuidv1();
         let pwd = `${DOWNLOADS_DIR}${downloadId}/`;
