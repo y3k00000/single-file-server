@@ -12,6 +12,7 @@ const CHROME = "/usr/bin/google-chrome-stable";
 const DOWNLOADS_DIR = `${__dirname}/downloads/`;
 
 /**
+ * https://stackoverflow.com/questions/15641243/need-to-zip-an-entire-directory-using-node-js
  * @param {String} source
  * @param {String} out
  * @returns {Promise}
@@ -35,6 +36,8 @@ let app = express();
 if (!fs.existsSync(DOWNLOADS_DIR)) {
     fs.mkdirSync(DOWNLOADS_DIR);
 };
+
+app.use(express.static(__dirname+"/static"));
 
 throwIfNoParam = (paramName) => { throw `${paramName} required!!` };
 app.get("/download", async (req, res) => {
