@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
 const Index = ({ }) => {
     let classes = useStyles();
     let [isClicking, setIsClicking] = useState(false);
+    let [readyUrl,setReadyUrl] = useState("");
     let downloadFromUrl = useCallback(async (url) => {
         console.log(url);
         setIsClicking(true);
@@ -24,17 +25,20 @@ const Index = ({ }) => {
             new URL(url);
             let result = await fetch(`/download?url=${url}`);
             let file = await result.blob();
-            window.open(URL.createObjectURL(file));
+            setReadyUrl(URL.createObjectURL(file));
         } catch(e){
             alert(e);
         }
         setIsClicking(false);
     }, [0]);
+    const saveUrl = useCallback(()=>{
+        window.open(readyUrl);
+    },[readyUrl]);
     let inputRef = useRef(React.createRef());
-    return (<form className={classes.root} noValidate autoComplete="off">
+    return readyUrl?(<Button variant="contained" onClick={saveUrl} color="primary">Save</Button>):(<form className={classes.root} noValidate autoComplete="off">
         <TextField id="outlined-basic" label="Input URL" disabled={isClicking} inputRef={inputRef} variant="outlined" />
         {isClicking&&(<CircularProgress color="secondary" />)}
-        <Button variant="contained" onClick={() => downloadFromUrl(inputRef.current.value)} color="primary">Download</Button>
+        <Button variant="contained" disabled={isClicking} onClick={() => downloadFromUrl(inputRef.current.value)} color="primary">Download</Button>
     </form>);
 }
 
