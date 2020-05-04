@@ -32,6 +32,7 @@ const Index = ({ }) => {
         setIsClicking(false);
     }, [0]);
     const saveUrl = useCallback(()=>{
+        console.log(`open ${readyUrl}`);
         window.open(readyUrl);
     },[readyUrl]);
     let inputRef = useRef(React.createRef());
