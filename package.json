@@ -8,7 +8,8 @@
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
         "rimraf": "^3.0.2",
-        "uuid": "^7.0.3"
+        "uuid": "^7.0.3",
+        "file-saver": "^2.0.2"
     },
     "devDependencies": {
         "parcel-bundler": "^1.12.4"
